@@ -26,7 +26,7 @@ namespace CoreHealthCheck.HealthCheckApiiDemo.CustomHealthChecksProvider.Databas
             {
                 try
                 {
-                    conn.Open();
+                    conn.Open(); 
                     return await Task.FromResult(HealthCheckResult.Healthy());
                 }
                 catch (SqlException ex)

@@ -11,29 +11,28 @@ namespace CoreHealthCheck.HealthCheckApiiDemo.CustomHealthChecksProvider.Databas
 {
     public class EgitimPortalHealthChecksProvider : IHealthCheck
     {
-        public EgitimPortalHealthChecksProvider(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
-
         public IConfiguration Configuration { get; }
-
+        public EgitimPortalHealthChecksProvider(IConfiguration configuration) { Configuration = configuration;}
 
         public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
         {
-
-            using (var conn = new SqlConnection(Configuration.GetSection("ConnectionStrings:SqlConnections:EgitimPortal").Value))
+            using var conn = new SqlConnection(Configuration.GetSection("ConnectionStrings:SqlConnections:EgitimPortal").Value);
+            try
             {
-                try
+                DateTime requestConnBeforeTime = DateTime.Now;
+                conn.Open(); 
+                DateTime requestConnAfterTime = DateTime.Now;
+                var passingTime = requestConnAfterTime - requestConnBeforeTime;
+                if (passingTime.TotalSeconds > 2)
                 {
-                    conn.Open();
-                    return await Task.FromResult(HealthCheckResult.Healthy());
+                    return await Task.FromResult(HealthCheckResult.Degraded(@"Bağlantı süresi aşımı. Bağlantı süresi :" 
+                                                                                 + passingTime.TotalMinutes.ToString()));
                 }
-                catch (SqlException ex)
-                {
-
-                    return await Task.FromResult(HealthCheckResult.Unhealthy());
-                }
+                return await Task.FromResult(HealthCheckResult.Healthy());
+            }
+            catch (SqlException ex)
+            {
+                return await Task.FromResult(HealthCheckResult.Unhealthy(ex.Message.ToString()));
             }
         }
     }
