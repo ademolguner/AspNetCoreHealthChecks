@@ -8,8 +8,6 @@ using System.Threading.Tasks;
 using CoreHealthCheck.HealthCheckApiiDemo.CustomHealthChecksProvider.DatabaseHealthChecks.SqlServerHealthChecks;
 using CoreHealthCheck.HealthCheckApiiDemo.CustomHealthChecksProvider.PingHealthChecks;
 using CoreHealthCheck.HealthCheckApiiDemo.Middlewares;
-//using CoreHealthCheck.HealthCheckApiiDemo.CustomHealthChecksProvider.DatabaseHealthChecks.SqlServerHealthChecks;
-//using CoreHealthCheck.HealthCheckApiiDemo.Middlewares;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -37,48 +35,12 @@ namespace CoreHealthCheck.HealthCheckApiiDemo
 
 
         public void ConfigureServices(IServiceCollection services)
-        {
-            #region .....
-            //services.AddCustomHealthChecksMiddleware(Configuration);
-            //services.AddHealthChecksUI();
-            #endregion
-            services
-                .AddHealthChecksUI(
-                setupSettings: 
-                setup =>
-                {
-                    setup.AddHealthCheckEndpoint("Test Health Check", "http://localhost:32986/AdemOlguner-HealthChecks");
-                    setup.SetEvaluationTimeInSeconds(3);
-                    setup.SetEvaluationTimeInSeconds(60);
-                })
-                .AddHealthChecks()
-                 .AddSqlServer(
-                                 connectionString: Configuration.GetSection("ConnectionStrings:SqlConnections:EgitimPortal").Value,
-                                 healthQuery: "select 1",
-                                 name: "EgitimPortal AddSqlServer Sql Server Db Check",
-                                 failureStatus: null,
-                                 tags: null,
-                                 timeout: TimeSpan.FromMilliseconds(1))
-                 .AddCheck<EgitimPortalHealthChecksProvider>("EgitimPortal EgitimPortalHealthChecksProvider Check")
-                .AddPingHealthCheck(_ =>
-                {
-                    _.AddHost("google.com", 200); // _.AddHost("172.217.17.196", 200);
-                }, "Google ping Test")
-                .AddCheck("Ping Test 1",new PingHealthCheckProvider("google.com",250))
-                .AddCheck("Ping Test 2", new PingHealthCheckProvider("google.com", 3))
-                .AddCheck("Ping Test 3", new PingHealthCheckProvider("1.9.0.3", 250))
-                .AddDiskStorageHealthCheck(s => s.AddDrive("C:\\", 1024)) // 1024 MB (1 GB) free minimum
-                .AddVirtualMemorySizeHealthCheck(512) // 512 MB max allocated memory
-                .AddPrivateMemoryHealthCheck(512) // 512 MB max allocated memory
-                .AddProcessHealthCheck("chrome.exe", p => p.Length > 0) // check if process is running
-                .AddWindowsServiceHealthCheck("docker", s => s.Status == ServiceControllerStatus.Running, "docker windows service status")
-                 ;
+        { 
+            services.AddCustomHealthChecksMiddleware(Configuration);
+            services.AddHealthChecksUI();
 
-             
 
-            #region ....
             services.AddControllers();
-            #endregion
         }
 
 
@@ -138,20 +100,6 @@ namespace CoreHealthCheck.HealthCheckApiiDemo
         }
 
 
-
-
-        public class RandomHealthCheck : IHealthCheck
-        {
-            public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
-            {
-                if (DateTime.UtcNow.Minute % 2 == 0)
-                {
-                    return Task.FromResult(HealthCheckResult.Healthy());
-                }
-
-                return Task.FromResult(HealthCheckResult.Unhealthy(description: "failed", exception: new InvalidCastException("Invalid cast from to to to")));
-            }
-
-        }
+         
     }
 }
