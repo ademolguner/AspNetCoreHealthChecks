@@ -1,0 +1,18 @@
+﻿body { 
+}
+
+.hc-aside__logo {
+    background-image: url(https://seeklogo.com/images/B/besiktas-e-sports-team-logo-8FAAC6E3B8-seeklogo.com.png);
+    background-position: center center;
+    background-origin: initial;
+    background-color: transparent;
+}
+
+#outer-container {
+    background-color: #e0dab8;
+}
+.hc-button  {
+    background-color:#0094ff;
+}
+
+

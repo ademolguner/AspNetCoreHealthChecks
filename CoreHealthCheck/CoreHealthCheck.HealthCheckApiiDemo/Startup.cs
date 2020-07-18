@@ -96,28 +96,11 @@ namespace CoreHealthCheck.HealthCheckApiiDemo
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseRouting();
-
+            app.UseRouting(); 
             app.UseAuthorization();
-
-            //var options = new HealthCheckOptions();
-            //options.ResponseWriter = async (c, r) =>
-            //{
-            //    c.Response.ContentType = "application/json";
-            //    var result = JsonConvert.SerializeObject(new
-            //    {
-            //        status = r.Status.ToString(),
-            //        errors = r.Entries.Select(e => new { key = e.Key, value = e.Value.Status.ToString() }),
-            //        durations=r.TotalDuration.TotalMilliseconds.ToString()
-            //    });
-            //    await c.Response.WriteAsync(result);
-            //};
-
-            //app.UseHealthChecks("/AdemOlguner-HealthChecks", options);
-
-            //app.UseHealthChecks("/AdemOlguner-HealthChecks");
             #endregion
 
+            #region HealthCkecks ayarları
             app.UseHealthChecks(
                    path: "/AdemOlguner-HealthChecks",
                    options: new HealthCheckOptions()
@@ -125,9 +108,11 @@ namespace CoreHealthCheck.HealthCheckApiiDemo
                        Predicate = _ => true,
                        ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
                    });
+
             app.UseHealthChecksUI(options =>
             {
-                options.UIPath = "/AdemOlguner-HealthChecks-ui"; 
+                options.UIPath = "/AdemOlguner-HealthChecks-ui";
+                options.AddCustomStylesheet("Content/css/ademolguner-healthchecks-custom.css");
             });
 
             app.UseHealthChecks(
@@ -141,11 +126,10 @@ namespace CoreHealthCheck.HealthCheckApiiDemo
             {
                 options.UIPath = "/AdemOlguner-HealthChecks-ui";
             });
-
+            #endregion
 
             #region ....
 
-            //options.AddCustomStylesheet("ademolguner-healthchecks-custom.css");
             app.UseEndpoints(endpoints =>
                {
                    endpoints.MapControllers();
