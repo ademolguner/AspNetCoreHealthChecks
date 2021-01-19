@@ -7,5 +7,6 @@ namespace CoreHealthCheck.HealthCheckApiiDemo.Middlewares
 {
     public class YeniClasss
     {
+        public int Id { get; set; }
     }
 }
